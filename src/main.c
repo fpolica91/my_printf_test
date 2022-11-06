@@ -14,23 +14,6 @@ int my_putchar(char c) {
   return write(1, &c, 1);
 }
 
-char hex_digit(int v) {
-    if (v >= 0 && v < 10)
-        return '0' + v;
-    else
-        return 'a' + v - 10; // <-- Here
-}
-
-void print_address_hex(void* p0) {
-    int i;
-    uintptr_t p = (uintptr_t)p0;
-
-    my_putchar('0'); my_putchar('x');
-    for(i = (sizeof(p) << 3) - 4; i>=0; i -= 4) {
-        my_putchar(hex_digit((p >> i) & 0xf));
-    }
-}
-
 char* itoa(int value, char* result, int base) {
   // check that the base if valid
   if (base < 2 || base > 36) { *result = '\0'; return result; }
@@ -53,6 +36,18 @@ char* itoa(int value, char* result, int base) {
     *ptr1++ = tmp_char;
   }
   return result;
+}
+
+int write_ptr(void *p) {
+    uintptr_t x = (uintptr_t)p;
+    char buf[2 + sizeof(x) * 2];
+    size_t i;
+    buf[0] = '0';
+    buf[1] = 'x';
+    for (i = 0; i < sizeof(x) * 2; i++) {
+        buf[i + 2] = "0123456789abcdef"[(x >> ((sizeof(x) * 2 - 1 - i) * 4)) & 0xf];
+    }
+    return write(1, buf, sizeof(buf));
 }
 
 int print_int(int c) {
@@ -84,6 +79,7 @@ void proceed_flag(va_list *arg, char flag) {
   }
   else if(flag == 'p'){
     char c = va_arg(*arg, int);
+    write_ptr(c);
     // print_address_hex(c);
     // my_putchar(&c);
   }
@@ -118,34 +114,18 @@ int my_printf(char* restrict format, ...) {
 }
 
 
-int write_ptr(void *p) {
-    uintptr_t x = (uintptr_t)p;
-    char buf[2 + sizeof(x) * 2];
-    size_t i;
-    buf[0] = '0';
-    buf[1] = 'x';
-    for (i = 0; i < sizeof(x) * 2; i++) {
-        buf[i + 2] = "0123456789abcdef"[(x >> ((sizeof(x) * 2 - 1 - i) * 4)) & 0xf];
-    }
-    return write(1, buf, sizeof(buf));
-}
+
 
 int main(){
 
 
   // printf("%p \n", ptr);
   char myStr[5] = "hello";
-  char * ptStr = myStr;           // store 16-bit address, and then pretend that memory is a character array
+  char * ptStr = myStr;           // store 16-bit address, and then pretend that memory is a 
 
-                 // store 16-bit address, and then pretend that memory is a character array
- 
-
-  write_ptr(ptStr);
-  // prit
-  // printf("%p\n", &ptStr);
-  // write(1, &ptr, strlen(ptr));
-  // // my_printf("%d \n", myNumber);
-  // printf("Printf Result %p ", ptStr);
+  printf("%p the thing \n", &ptStr);
+  write_ptr(&ptStr);
+  // printf("OMG NEXT \n");
   // my_printf("Custom Printf Result => %p \n", ptStr);
     // my_printf("Hello world!\n");
     // my_printf("%c!\n", 'H');
