@@ -77,17 +77,12 @@ void proceed_flag(va_list *arg, char flag) {
     char c = va_arg(*arg, int);
     my_putchar(c);    
   }
-  else if(flag == 'p'){
-    char c = va_arg(*arg, int);
-    write_ptr(c);
-    // print_address_hex(c);
-    // my_putchar(&c);
-  }
   else if (flag == 'd') {
     int digit = va_arg(*arg, int);
     print_int(digit);   
   }
 }
+// ello
 
 int my_printf(char* restrict format, ...) {
   va_list arg;
@@ -98,8 +93,12 @@ int my_printf(char* restrict format, ...) {
   while (format[index] != 0)
   {
     if (flag_spotted) {
-      proceed_flag(&arg, format[index]);
-      flag_spotted = FALSE;
+      if(format[index] == 'p'){
+         write_ptr(&arg);
+      }else{
+        proceed_flag(&arg, format[index]);
+        flag_spotted = FALSE;
+      }
     }
     else if (format[index] == '%') {
       flag_spotted = TRUE;
@@ -113,9 +112,6 @@ int my_printf(char* restrict format, ...) {
   return 0;
 }
 
-
-
-
 int main(){
 
 
@@ -123,10 +119,11 @@ int main(){
   char myStr[5] = "hello";
   char * ptStr = myStr;           // store 16-bit address, and then pretend that memory is a 
 
-  printf("%p the thing \n", &ptStr);
-  write_ptr(&ptStr);
+  
+  // write_ptr(&ptStr);
   // printf("OMG NEXT \n");
-  // my_printf("Custom Printf Result => %p \n", ptStr);
+  my_printf("Custom Printf Result => %p \n", myStr);
+  printf("Original Prinft => %p\n", &myStr);
     // my_printf("Hello world!\n");
     // my_printf("%c!\n", 'H');
     // my_printf("the char is %c \n", 'a');
